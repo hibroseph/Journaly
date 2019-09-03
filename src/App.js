@@ -1,26 +1,43 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { Component } from "react";
+import CreateEntryComponent from "./CreateEntryComponent";
+import ViewEntriesComponent from "./ViewEntriesComponent";
+import axios from "axios";
+class App extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { entries: [] };
+  }
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+  componentDidMount() {
+    this.getNewEntries();
+  }
+
+  getNewEntries() {
+    console.log("Getting new entries");
+    axios.get("http://localhost:4000/entries").then(res => {
+      console.log("GET REQUEST: " + JSON.stringify(res.data));
+      this.setState({ entries: res.data });
+      console.log("state: " + JSON.stringify(this.state.entries));
+    });
+  }
+
+  render() {
+    console.log("App.js: " + JSON.stringify(this.state.entries));
+    return (
+      <div>
+        <h3>Welcome To Journaly</h3>
+        <CreateEntryComponent
+          newEntry={() => {
+            console.log("There is a new entry");
+            this.getNewEntries();
+          }}
+        ></CreateEntryComponent>
+        <ViewEntriesComponent
+          entries={this.state.entries}
+        ></ViewEntriesComponent>
+      </div>
+    );
+  }
 }
 
 export default App;
